@@ -1,80 +1,50 @@
-import requests
-
+from flask import Flask, jsonify
+from dotenv import load_dotenv
 import os
+load_dotenv()
 
+
+# Crear la aplicación Flask
+app = Flask(__name__)
+
+# Definir rutas (endpoints)
+@app.route("/")
+def home():
+    """Ruta principal que retorna un mensaje de bienvenida"""
+    return jsonify({
+        "mensaje": "¡Bienvenido a mi primer servicio web con Flask!",
+        "status": "success"
+    })
+
+@app.route("/saludo/<nombre>")
+def saludo(nombre):
+    """
+    Ruta que retorna un saludo personalizado
+    
+    Args:
+        nombre (str): Nombre de la persona a saludar
+    """
+    return jsonify({
+        "mensaje": f"¡Hola, {nombre}! Bienvenido al servicio web con Flask.",
+        "status": "success"
+    })
+
+@app.errorhandler(404)
+def not_found(error):
+    """Manejador para errores 404"""
+    return jsonify({
+        "mensaje": "Ruta no encontrada",
+        "status": "error"
+    }), 404
+
+@app.errorhandler(500)
+def server_error(error):
+    """Manejador para errores 500"""
+    return jsonify({
+        "mensaje": "Error interno del servidor",
+        "status": "error"
+    }), 500
+
+# Ejecutar la aplicación
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
-
-
-# URL base de la API
-url_base = "http://127.0.0.1:5000/usuarios"
-
-# 1. Crear un Usuario (POST)
-def crear_usuario(nombre, edad):
-    data = {
-        "nombre": nombre,
-        "edad": edad
-    }
-    response = requests.post(url_base, json=data)
-    print("Crear Usuario:", response.json())
-
-# 2. Obtener Todos los Usuarios (GET)
-def obtener_usuarios():
-    response = requests.get(url_base)
-    print("Obtener Todos los Usuarios:", response.json())
-
-# 3. Obtener un Usuario por ID (GET)
-def obtener_usuario(id):
-    response = requests.get(f"{url_base}/{id}")
-    print(f"Obtener Usuario {id}:", response.json())
-
-# 4. Actualizar un Usuario (PUT)
-def actualizar_usuario(id, nombre, edad):
-    data = {
-        "nombre": nombre,
-        "edad": edad
-    }
-    response = requests.put(f"{url_base}/{id}", json=data)
-    print(f"Actualizar Usuario {id}:", response.json())
-
-# 5. Eliminar un Usuario (DELETE)
-def eliminar_usuario(id):
-    response = requests.delete(f"{url_base}/{id}")
-    print(f"Eliminar Usuario {id}:", response.json())
-def manejar_respuesta(response):
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return {"error": response.status_code, "mensaje": response.text}
-
-# Ejemplo:
-def obtener_usuario(id):
-    response = requests.get(f"{url_base}/{id}")
-    resultado = manejar_respuesta(response)
-    print(f"Obtener Usuario {id}:", resultado)
-
-# Probar cada operación
-if __name__ == "__main__":
-    # Crear un nuevo usuario
-    crear_usuario("Juan", 25)
-
-    # Obtener todos los usuarios
-    obtener_usuarios()
-
-    # Obtener un usuario específico por ID
-    obtener_usuario(1)
-
-    # Actualizar el usuario con ID 1
-    actualizar_usuario(1, "Juan Actualizado", 26)
-
-    # Obtener el usuario actualizado
-    obtener_usuario(1)
-
-    # Eliminar el usuario con ID 1
-    eliminar_usuario(1)
-
-    # Intentar obtener el usuario eliminado
-    obtener_usuario(1)
-@app.route('/')
-def index():
-    return "Bienvenido a la API"
+    app.run(debug=True)
