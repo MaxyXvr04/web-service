@@ -58,3 +58,6 @@ if __name__ == "__main__":
 
     # Intentar obtener el usuario eliminado
     obtener_usuario(1)
+@app.route('/')
+def index():
+    return "Bienvenido a la API"
