@@ -1,5 +1,11 @@
 import requests
 
+import os
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+
+
 # URL base de la API
 url_base = "http://127.0.0.1:5000/usuarios"
 
@@ -35,6 +41,17 @@ def actualizar_usuario(id, nombre, edad):
 def eliminar_usuario(id):
     response = requests.delete(f"{url_base}/{id}")
     print(f"Eliminar Usuario {id}:", response.json())
+def manejar_respuesta(response):
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": response.status_code, "mensaje": response.text}
+
+# Ejemplo:
+def obtener_usuario(id):
+    response = requests.get(f"{url_base}/{id}")
+    resultado = manejar_respuesta(response)
+    print(f"Obtener Usuario {id}:", resultado)
 
 # Probar cada operación
 if __name__ == "__main__":
